@@ -1,6 +1,6 @@
 {
-  "name": "nos",
-  "version": "1.0.0",
+  "name": "yqstart_nos",
+  "version": "1.0.1",
   "description": "npm镜像源管理工具",
   "main": "index.js",
   "scripts": {
@@ -20,10 +20,8 @@
     "url": "git://github.com/yqstart/nos.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "chalk": "^5.2.0",
-    "commander": "^10.0.0",
-    "inquirer": "^9.1.4"
+    "commander": "^10.0.0"
   }
 }
