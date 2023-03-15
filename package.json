@@ -1,11 +1,29 @@
 {
   "name": "nos",
   "version": "1.0.0",
-  "description": "",
+  "description": "npm镜像源管理工具",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "node -e \"try{require('./postinstall')}catch(e){}\""
+  },
+  "bin": {
+    "nos": "index.js"
+  },
+  "keywords": [
+    "npm",
+    "yarn",
+    "pnpm"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/yqstart/nos.git"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^5.2.0",
+    "commander": "^10.0.0",
+    "inquirer": "^9.1.4"
+  }
 }
