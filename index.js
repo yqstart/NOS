@@ -6,50 +6,61 @@ const inquirer = require("inquirer");
 const info = require("./package.json");
 const registryObj = require("./registries.json");
 
-const getOrigin = (key) => {
+const getRegistry = (key) => {
   return execSync(`${key} config get registry`, { encoding: "utf-8" }).trim();
 };
 
-const getLength = () => {
+const getLength = (arg) => {
   let length = 0;
-  Object.keys(registryObj).forEach((item) => {
-    if (item.length > length) length = item.length;
-  });
-  return length + 8;
+  if (arg) {
+    length = 4;
+  } else {
+    Object.keys(registryObj).forEach((item) => {
+      if (item.length > length) length = item.length;
+    });
+  }
+  return length + 5;
 };
 
 program.name(info.name).description(info.description).version(info.version);
-// program.option("-g, --global", "global config");
+program
+  .option("-n, --npm", "npm registry config")
+  .option("-y, --yarn", "yarn registry config")
+  .option("-p, --pnpm", "pnpm registry config");
 // const options = program.opts();
 
+const getOpt = () => {
+  const options = program.opts();
+  if (!Object.keys(options).length) return ["npm"];
+  return Object.keys(options);
+};
 // 查看当前源
 program
   .command("get")
-  .argument("[key]", "", "npm")
-  .description("查看当前镜像, 参数默认为npm, 可选yarn pnpm")
-  .action((args) => {
-    console.log(getOrigin(args));
+  .description("get current registry")
+  .action(() => {
+    console.log(
+      getOpt()
+        .map((item) => {
+          return `${item}${new Array(getLength(true) - item.length)
+            .fill("")
+            .join(" ")}${getRegistry(item)}`;
+        })
+        .join("\n")
+    );
   });
 
 // 查看源列表
 program
   .command("ls")
-  .argument("[key]", "", "npm")
-  .description("查看镜像列表, 参数默认为npm, 可选yarn pnpm")
-  .action((args) => {
-    const registry = getOrigin(args); // 当前源
-    const length = getLength();
+  .description("registry list")
+  .action(() => {
     console.log(
       Object.entries(registryObj)
         .map(([key, value]) => {
-          if (value.registry.includes(registry)) {
-            return `* ${key}${new Array(length - key.length)
-              .fill("")
-              .join(" ")}${value.registry}`;
-          }
-          return `  ${key}${new Array(length - key.length).fill("").join(" ")}${
-            value.registry
-          }`;
+          return `${key}${new Array(getLength() - key.length)
+            .fill("")
+            .join(" ")}${value.registry}`;
         })
         .join("\n")
     );
@@ -58,37 +69,87 @@ program
 program
   .command("use")
   .argument("[key]", "", "npm")
-  .description("请选择镜像源, 参数默认为npm, 可选yarn pnpm")
-  .action((args) => {
+  .description("select registry")
+  .action(() => {
     inquirer
       .prompt([
         {
           type: "list",
           name: "use",
-          message: "请选择镜像源",
+          message: "please select registry",
           choices: Object.entries(registryObj).map(
-            ([key, value]) => `${key}: ${value.registry}`
+            ([key, value]) =>
+              `${key}${new Array(getLength() - key.length).fill("").join(" ")}${
+                value.registry
+              }`
           ),
         },
       ])
       .then((answers) => {
-        const registry = answers.use.split(":")[1].trim();
-        exec(`${args} config set registry ${registry}`, null, (err) => {
-          if (err) {
-            console.log(`切换失败: ${err}`);
-          } else {
-            console.log("切换成功");
-          }
+        const arr = answers.use.split(" ");
+        const registry = arr[arr.length - 1].trim();
+        getOpt().map((item) => {
+          exec(`${item} config set registry ${registry}`, null, (err) => {
+            if (err) {
+              console.log(`${item} registry switch failure: ${err}`);
+            } else {
+              console.log(
+                `${item} registry switch successfully\n${item} current registry ${registry}`
+              );
+            }
+          });
         });
       })
       .catch((error) => {
-        // if (error.isTtyError) {
-        //   // Prompt couldn't be rendered in the current environment
-        // } else {
-        //   // Something else went wrong
-        // }
-        console.log(`切换失败: ${error}`);
+        console.log(`registry switch failure: ${error}`);
       });
+  });
+
+program
+  .command("add")
+  .description("add registry")
+  .action(() => {});
+
+program
+  .command("remove")
+  .description("remove registry")
+  .action(() => {});
+
+program
+  .command("reset")
+  .description("reset official registry")
+  .action(() => {
+    getOpt().map((item) => {
+      if (item.includes("npm")) {
+        exec(
+          `${item} config set registry https://registry.npmjs.org/`,
+          null,
+          (err) => {
+            if (err) {
+              console.log(`${item} registry reset failure: ${err}`);
+            } else {
+              console.log(
+                `${item} registry reset successfully\n${item} current registry https://registry.npmjs.org/`
+              );
+            }
+          }
+        );
+      } else {
+        exec(
+          `${item} config set registry https://registry.yarnpkg.com/`,
+          null,
+          (err) => {
+            if (err) {
+              console.log(`${item} registry reset failure: ${err}`);
+            } else {
+              console.log(
+                `${item} registry reset successfully\n${item} current registry https://registry.yarnpkg.com/`
+              );
+            }
+          }
+        );
+      }
+    });
   });
 
 program.parse(process.argv);

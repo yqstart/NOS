@@ -1,11 +1,11 @@
 {
   "name": "yqstart_nos",
-  "version": "1.0.2",
-  "description": "npm镜像源管理工具",
+  "version": "1.0.3",
+  "description": "npm yarn pnmp 镜像源管理工具",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "node -e \"try{require('./postinstall')}catch(e){}\""
+    "postinstall": "node -e \"try{require('./logo.js')}catch(e){}\""
   },
   "bin": {
     "nos": "index.js"

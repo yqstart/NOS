@@ -1,12 +1,4 @@
 {
-  "npm": {
-    "home": "https://www.npmjs.org",
-    "registry": "https://registry.npmjs.org/"
-  },
-  "yarn": {
-    "home": "https://yarnpkg.com",
-    "registry": "https://registry.yarnpkg.com/"
-  },
   "tencent": {
     "home": "https://mirrors.cloud.tencent.com/npm/",
     "registry": "https://mirrors.cloud.tencent.com/npm/"
@@ -15,8 +7,12 @@
     "home": "https://npmmirror.com",
     "registry": "https://registry.npmmirror.com/"
   },
-  "npmMirror": {
-    "home": "https://skimdb.npmjs.com/",
-    "registry": "https://skimdb.npmjs.com/registry/"
+  "huawei": {
+    "home": "https://mirrors.huaweicloud.com/repository/npm/",
+    "registry": "https://mirrors.huaweicloud.com/repository/npm/"
+  },
+  "zju_edu": {
+    "home": "https://mirrors.zju.edu.cn/npm/",
+    "registry": "https://mirrors.zju.edu.cn/npm/"
   }
 }
