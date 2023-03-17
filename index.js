@@ -5,6 +5,8 @@ const { program } = require("commander");
 const inquirer = require("inquirer");
 const info = require("./package.json");
 const registryObj = require("./registries.json");
+const fs = require("fs");
+const path = require("path");
 
 const getRegistry = (key) => {
   return execSync(`${key} config get registry`, { encoding: "utf-8" }).trim();
@@ -100,20 +102,57 @@ program
           });
         });
       })
-      .catch((error) => {
-        console.log(`registry switch failure: ${error}`);
-      });
+      .catch(() => {});
   });
 
 program
   .command("add")
   .description("add registry")
-  .action(() => {});
+  .action(() => {
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "name",
+          message: "please enter registry name",
+          validate(name) {
+            if (Object.keys(registryObj).includes(name.trim()))
+              return `duplicate name`;
+            if (!name.trim()) return `name is required`;
+            return true;
+          },
+        },
+        {
+          type: "input",
+          name: "registry",
+          message: "please enter registry url",
+          validate(url) {
+            if (!url.trim()) return `registry url is required`;
+            return true;
+          },
+        },
+      ])
+      .then((answer) => {
+        registryObj[answer.name] = {
+            home: answer.registry.trim(),
+            registry: answer.registry.trim()
+        }
+        fs.writeFile(path.resolve(__dirname, './registries.json'), JSON.stringify(registryObj), (err) => {
+            if(err) {
+                console.log(`add registry failure: ${err}`)
+                return;
+            }
+            console.log('add registry successfully')
+        })
+      })
+      .catch(() => {});
+  });
 
 program
   .command("remove")
   .description("remove registry")
-  .action(() => {});
+  .action(() => {
+  });
 
 program
   .command("reset")
