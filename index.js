@@ -57,6 +57,8 @@ program
   .command("ls")
   .description("registry list")
   .action(() => {
+    if (!Object.keys(registryObj).length)
+      console.log("registry list is empty! please add registry first");
     console.log(
       Object.entries(registryObj)
         .map(([key, value]) => {
@@ -76,7 +78,7 @@ program
     inquirer
       .prompt([
         {
-          type: "list",
+          type: "rawlist",
           name: "use",
           message: "please select registry",
           choices: Object.entries(registryObj).map(
@@ -134,16 +136,20 @@ program
       ])
       .then((answer) => {
         registryObj[answer.name] = {
-            home: answer.registry.trim(),
-            registry: answer.registry.trim()
-        }
-        fs.writeFile(path.resolve(__dirname, './registries.json'), JSON.stringify(registryObj), (err) => {
-            if(err) {
-                console.log(`add registry failure: ${err}`)
-                return;
+          home: answer.registry.trim(),
+          registry: answer.registry.trim(),
+        };
+        fs.writeFile(
+          path.resolve(__dirname, "./registries.json"),
+          JSON.stringify(registryObj),
+          (err) => {
+            if (err) {
+              console.log(`add registry failure: ${err}`);
+              return;
             }
-            console.log('add registry successfully')
-        })
+            console.log("add registry successfully");
+          }
+        );
       })
       .catch(() => {});
   });
@@ -152,6 +158,39 @@ program
   .command("remove")
   .description("remove registry")
   .action(() => {
+    if (!Object.keys(registryObj).length)
+      console.log("no registry can be removed");
+
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "registry",
+          message: "please select registry to be removed",
+          choices: Object.entries(registryObj).map(
+            ([key, value]) =>
+              `${key}${new Array(getLength() - key.length).fill("").join(" ")}${
+                value.registry
+              }`
+          ),
+        },
+      ])
+      .then((answer) => {
+        const removeKey = answer.registry.split(" ")[0].trim();
+        delete registryObj[removeKey];
+        fs.writeFile(
+          path.resolve(__dirname, "./registries.json"),
+          JSON.stringify(registryObj),
+          (err) => {
+            if (err) {
+              console.log(`remove registry failure: ${err}`);
+              return;
+            }
+            console.log("remove registry successfully");
+          }
+        );
+      })
+      .catch(() => {});
   });
 
 program

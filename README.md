@@ -14,7 +14,7 @@ get                         查看当前镜像源
 use<registry>               切换镜像源
 reset                       重置为官方源
 add<name><registry url>     添加自定义镜像源
-remove                      TODO
+remove<name>                删除自定义镜像源
 ```
 ### Options(默认为npm)
 ```
