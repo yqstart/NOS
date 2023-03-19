@@ -54,4 +54,8 @@ npm registry reset successfully
 npm current registry https://registry.npmjs.org/
 pnpm registry reset successfully
 pnpm current registry https://registry.npmjs.org/
+
+$ nos add <name> <regisrty url>
+
+$ nos remove <name>
 ```
